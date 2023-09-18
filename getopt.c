@@ -32,17 +32,17 @@ int main(int argc, char *argv[])
 
 	log("args before getopt()\n");
 	for (i = 0; i < argc; i++)
-		log(SPACE "arg[%d] = %s\n", i, argv[i]);
+		log(SPACE "arg[%d -> %p] = %s\n", i, argv[i], argv[i]);
 
 	log("opt??? before getopt()\n");
-	log(SPACE "optarg: %s\n", optarg);
+	log(SPACE "optarg: %s -> %p\n", optarg, optarg);
 	log(SPACE "optind: %d\n", optind);
 	log(SPACE "opterr: %d\n", opterr);
 	log(SPACE "optopt: %c\n", optopt);
 
 	log("getopt() loop\n");
 	while ((i = getopt(argc, argv, options)) != -1) {
-		log(SPACE "'%c' optarg: %s\n", i, optarg);
+		log(SPACE "'%c' optarg: %s -> %p\n", i, optarg, optarg);
 		log(SPACE "'%c' optind: %d\n", i, optind);
 		log(SPACE "'%c' opterr: %d\n", i, opterr);
 		log(SPACE "'%c' optopt: %c\n", i, optopt);
@@ -74,20 +74,20 @@ int main(int argc, char *argv[])
 	}
 
 	log("opt??? after getopt()\n");
-	log(SPACE "optarg: %s\n", optarg);
+	log(SPACE "optarg: %s -> %p\n", optarg, optarg);
 	log(SPACE "optind: %d\n", optind);
 	log(SPACE "opterr: %d\n", opterr);
 	log(SPACE "optopt: %c\n", optopt);
 
 	log("parsed options\n");
 	log(SPACE "a = %d\n", opt_a);
-	log(SPACE "b = %d (%s)\n", opt_b, opt_b_arg);
-	log(SPACE "c = %d (%s)\n", opt_c, opt_c_arg);
+	log(SPACE "b = %d, arg %s -> %p\n", opt_b, opt_b_arg, opt_b_arg);
+	log(SPACE "c = %d, arg %s -> %p\n", opt_c, opt_c_arg, opt_c_arg);
 	log(SPACE "d = %d\n", opt_d);
 
 	log("args after getopt()\n");
 	for (i = 0; i < argc; i++)
-		log(SPACE "arg[%d] = %s\n", i, argv[i]);
+		log(SPACE "arg[%d -> %p] = %s\n", i, argv[i], argv[i]);
 
 	return 0;
 }

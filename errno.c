@@ -217,12 +217,13 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
+	errno = 0;
 	val = strtol(argv[1], &endptr, 10);
 	if (errno)
 		die("strtol() failed: %m\n");
 
 	if (endptr == argv[1])
-		die("not a number: %s", argv[1]);
+		die("not a number: %s\n", argv[1]);
 
 	for (e = ARRAY_BEGIN(err); e < ARRAY_END(err); e++) {
 		if (e->number == val) {

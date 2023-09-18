@@ -97,6 +97,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
+	errno = 0;
 	val = strtol(argv[1], &endptr, 10);
 	if (errno)
 		die("strtol() failed: %m\n");
