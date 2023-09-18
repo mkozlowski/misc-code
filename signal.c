@@ -1,3 +1,5 @@
+#define _GNU_SOURCE /* strsignal(), sigabbrev_np(), sigdescr_np() */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -50,7 +52,8 @@ struct signal_entry {
 
 static void print_signal(struct signal_entry *s)
 {
-	log("%-11s %-4d\n", s->name, s->number);
+	log("%-11s %2d  %-25s %-8s %-25s\n", s->name, s->number,
+	    strsignal(s->number), sigabbrev_np(s->number), sigdescr_np(s->number));
 }
 
 int main(int argc, char *argv[])
@@ -103,7 +106,7 @@ int main(int argc, char *argv[])
 		die("strtol() failed: %m\n");
 
 	if (endptr == argv[1])
-		die("not a number: %s", argv[1]);
+		die("not a number: %s\n", argv[1]);
 
 	for (e = ARRAY_BEGIN(sig); e < ARRAY_END(sig); e++) {
 		if (e->number == val) {
