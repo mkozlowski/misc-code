@@ -1,4 +1,4 @@
-name: CI
+name: CI x86_64
 
 on: [ push ]
 
@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: build for x86_64
+    - name: build
       run: |
         make
         make clean

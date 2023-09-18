@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 		/* yes, this is a leak */
 		name = malloc(16);
 
-		snprintf(name, 16, "SIGRT + %ld", e - ARRAY_BEGIN(sig_rt));
+		snprintf(name, 16, "SIGRT + %td", e - ARRAY_BEGIN(sig_rt));
 		*e = ENTRY_RT(SIGRTMIN + e - ARRAY_BEGIN(sig_rt), name);
 	}
 
