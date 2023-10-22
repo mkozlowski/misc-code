@@ -52,8 +52,13 @@ struct signal_entry {
 
 static void print_signal(struct signal_entry *s)
 {
+#if __GLIBC_PREREQ(2, 32)
 	log("%-11s %2d  %-25s %-8s %-25s\n", s->name, s->number,
 	    strsignal(s->number), sigabbrev_np(s->number), sigdescr_np(s->number));
+#else
+	log("%-11s %2d  %-25s\n", s->name, s->number, strsignal(s->number));
+
+#endif
 }
 
 int main(int argc, char *argv[])
@@ -72,9 +77,9 @@ int main(int argc, char *argv[])
 		char *name;
 
 		/* yes, this is a leak */
-		name = malloc(16);
+		name = malloc(32);
 
-		snprintf(name, 16, "SIGRT + %td", e - ARRAY_BEGIN(sig_rt));
+		snprintf(name, 32, "SIGRT + %td", e - ARRAY_BEGIN(sig_rt));
 		*e = ENTRY_RT(SIGRTMIN + e - ARRAY_BEGIN(sig_rt), name);
 	}
 

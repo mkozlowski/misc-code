@@ -229,8 +229,12 @@ struct conf_entry {
 	ENTRY(_SC_XOPEN_STREAMS),
 	ENTRY(_SC_THREAD_ROBUST_PRIO_INHERIT),
 	ENTRY(_SC_THREAD_ROBUST_PRIO_PROTECT),
+#ifdef _SC_MINSIGSTKSZ
 	ENTRY(_SC_MINSIGSTKSZ),
+#endif
+#ifdef _SC_SIGSTKSZ
 	ENTRY(_SC_SIGSTKSZ),
+#endif
 };
 
 int main(int argc, char *argv[])

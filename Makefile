@@ -4,7 +4,7 @@ ifeq ("$(origin CC)", "default")
     undefine CC
 endif
 
-CC ?= gcc
+CC ?= $(CROSS_COMPILE)gcc
 
 CFLAGS = -std=c11 -Wall -Wmissing-prototypes -O0 -g -Werror
 LDFLAGS =

@@ -26,7 +26,7 @@ RUN apt-get install -y gcc-riscv64-linux-gnu
 
 # misc tools
 RUN apt-get install -y inotify-tools strace ripgrep
-RUN apt-get install -y mc tree htop
+RUN apt-get install -y mc tree htop rsync
 
 RUN echo "dash dash/sh boolean false" | debconf-set-selections
 RUN DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
