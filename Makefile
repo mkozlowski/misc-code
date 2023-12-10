@@ -5,6 +5,7 @@ ifeq ("$(origin CC)", "default")
 endif
 
 CC ?= $(CROSS_COMPILE)gcc
+RC ?= rustc
 
 CFLAGS = -std=c11 -Wall -Wmissing-prototypes -O0 -g -Werror
 LDFLAGS =
@@ -15,11 +16,17 @@ ALT = vdso
 DEF := $(filter-out $(ALT), $(ALL))
 TXT = cc-version.txt cc-defines.txt
 
+RS  = $(wildcard *.rs)
+RSB = $(RS:%.rs=%)
 
-all: $(DEF) $(ALT) $(TXT)
+default: $(DEF) $(ALT) $(TXT)
+rust: $(RSB)
 
 $(DEF): %: %.c Makefile
 	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
+
+$(RSB): %: %.rs Makefile
+	$(RC) $<
 
 vdso: %: %.c Makefile
 	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS) -ldl
@@ -33,4 +40,4 @@ cc-defines.txt:
 	$(CC) $(CFLAGS) -dM -E - < /dev/null > $@
 
 clean:
-	rm -f $(DEF) $(ALT) $(TXT)
+	rm -f $(DEF) $(ALT) $(TXT) $(RSB)
