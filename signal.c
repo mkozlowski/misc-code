@@ -8,13 +8,9 @@
 
 #include "common.h"
 
-#define ENTRY(e) { (e), #e }
-#define ENTRY_RT(e, n) (struct signal_entry){ (e), (n) };
+#define ENTRY(e) [e] = #e
 
-struct signal_entry {
-	int number;
-	char *name;
-} static sig[] = {
+static char sig[_NSIG][16] = {
 	ENTRY(SIGHUP),
 	ENTRY(SIGINT),
 	ENTRY(SIGQUIT),
@@ -50,57 +46,49 @@ struct signal_entry {
 	ENTRY(SIGSYS),
 };
 
-static void print_signal(struct signal_entry *s)
-{
-#if __GLIBC_PREREQ(2, 32)
-	log("%-11s %2d  %-25s %-8s %-25s\n", s->name, s->number,
-	    strsignal(s->number), sigabbrev_np(s->number), sigdescr_np(s->number));
-#else
-	log("%-11s %2d  %-25s\n", s->name, s->number, strsignal(s->number));
 
+static void sig_rt_init(void)
+{
+	int i;
+
+	for (i = SIGRTMIN; i <= SIGRTMAX; i++)
+		snprintf(sig[i], sizeof(sig[i]), "SIGRT + %d", i - SIGRTMIN);
+}
+
+static void print_signal(int number)
+{
+	if (sig[number][0] == '\0') {
+		log("unknown signal %d\n", number);
+		return;
+	}
+
+#if __GLIBC_PREREQ(2, 32)
+	log("%-11s %2d  %-25s %-8s %-25s\n", sig[number], number,
+	    strsignal(number), sigabbrev_np(number), sigdescr_np(number));
+#else
+	log("%-11s %2d  %-25s\n", sig[number], number, strsignal(number));
 #endif
 }
 
 int main(int argc, char *argv[])
 {
-	/*
-	 * SIGRTMIN and SIGRTMAX are defined as __libc_current_sigrtmin()
-	 * and __libc_current_sigrtmax() respecively hence separate sig_rt
-	 * array.
-	 */
-	struct signal_entry sig_rt[SIGRTMAX - SIGRTMIN + 1];
-	struct signal_entry *e;
+	int i;
 	char *endptr;
 	long val;
 
-	for (e = ARRAY_BEGIN(sig_rt); e < ARRAY_END(sig_rt); e++) {
-		char *name;
-
-		/* yes, this is a leak */
-		name = malloc(32);
-
-		snprintf(name, 32, "SIGRT + %td", e - ARRAY_BEGIN(sig_rt));
-		*e = ENTRY_RT(SIGRTMIN + e - ARRAY_BEGIN(sig_rt), name);
-	}
+	sig_rt_init();
 
 	if (argc == 1) {
-		for (e = ARRAY_BEGIN(sig); e < ARRAY_END(sig); e++)
-			print_signal(e);
-
-		for (e = ARRAY_BEGIN(sig_rt); e < ARRAY_END(sig_rt); e++)
-			print_signal(e);
+		for (i = 0; i < ARRAY_SIZE(sig); i++)
+			print_signal(i);
 
 		return 0;
 	}
 
 	if (argv[1][0] == 'S') {
-		for (e = ARRAY_BEGIN(sig); e < ARRAY_END(sig); e++)
-			if (!strncmp(e->name, argv[1], strlen(argv[1])))
-				print_signal(e);
-
-		for (e = ARRAY_BEGIN(sig_rt); e < ARRAY_END(sig_rt); e++)
-			if (!strncmp(e->name, argv[1], strlen(argv[1])))
-				print_signal(e);
+		for (i = 0; i < ARRAY_SIZE(sig); i++)
+			if (!strncmp(sig[i], argv[1], strlen(argv[1])))
+				print_signal(i);
 
 		return 0;
 	}
@@ -113,16 +101,9 @@ int main(int argc, char *argv[])
 	if (endptr == argv[1])
 		die("not a number: %s\n", argv[1]);
 
-	for (e = ARRAY_BEGIN(sig); e < ARRAY_END(sig); e++) {
-		if (e->number == val) {
-			print_signal(e);
-			return 0;
-		}
-	}
-
-	for (e = ARRAY_BEGIN(sig_rt); e < ARRAY_END(sig_rt); e++) {
-		if (e->number == val) {
-			print_signal(e);
+	for (i = 0; i < ARRAY_SIZE(sig); i++) {
+		if (i == val) {
+			print_signal(i);
 			return 0;
 		}
 	}
