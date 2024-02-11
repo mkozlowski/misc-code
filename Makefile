@@ -12,7 +12,7 @@ LDFLAGS =
 
 SRC = $(wildcard *.c)
 ALL = $(SRC:%.c=%)
-ALT = vdso
+ALT = vdso libsymtrap.so
 DEF := $(filter-out $(ALT), $(ALL))
 TXT = cc-version.txt cc-defines.txt
 
@@ -29,7 +29,10 @@ $(RSB): %: %.rs Makefile
 	$(RC) $<
 
 vdso: %: %.c Makefile
-	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS) -ldl
+	$(CC) $(CFLAGS) $< -o $@ -ldl $(LDFLAGS)
+
+libsymtrap.so: %: %.c Makefile
+	$(CC) $(CFLAGS) -fPIC -shared $< -o $@ -Wl,-z,initfirst -ldl $(LDFLAGS)
 
 cc-version.txt: Makefile
 	echo CC=$(CC) > $@
