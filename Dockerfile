@@ -1,11 +1,11 @@
 #
 # build:
-# docker build --build-arg CACHEBUST=$(date +%F) --build-arg USER=$USER -t cc:22.04 .
+# docker build --build-arg CACHEBUST=$(date +%F) --build-arg USER=$USER -t cc:24.04 .
 #
 # run:
-# docker run -ti -v /home:/home -w $PWD cc:22.04
+# docker run -ti -v /home:/home -w $PWD cc:24.04
 #
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -33,6 +33,7 @@ RUN DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
 
 ARG USER=user
 
+RUN userdel -r ubuntu
 RUN groupadd -g 1000 ${USER}
 RUN useradd -g ${USER} -G sudo -u 1000 ${USER}
 RUN echo "${USER} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user
